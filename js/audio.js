@@ -10,6 +10,7 @@ if(track!==name){music.pause();track=name;music.src='assets/audio/bgm-'+name+'.m
 function begin(e){if(e.isTrusted===false)return;unlocked=true;gesture=true;setTimeout(()=>gesture=false,0);if(settings.musicEnabled&&track&&!document.hidden)music.play().catch(()=>{});}
 document.addEventListener('pointerdown',begin,true);document.addEventListener('pointerup',begin,true);document.addEventListener('keydown',begin,true);
 document.addEventListener('click',e=>{begin(e);const b=e.target.closest('button,[data-table]');if(!b||b.disabled)return;let cue=null;
+if(b.hasAttribute('data-curtain'))return;
 if(b.id==='waiting-slot'||b.id==='admit')cue='door';
 else if(b.matches('[data-table], [data-table-button]')){const t=root.tavern?.tables[Number(b.dataset.table??b.dataset.tableButton)],g=root.tavern?.guest(t?.guestId);cue=g?.request?'bell':'table-crowd';}
 else if(b.matches('[data-talk],[data-life-staff],[data-staff],[data-employee]'))cue=b.dataset.talk==='practice'?'female-surprise':'female-laugh';
@@ -26,7 +27,7 @@ if(e.type==='purchase'||e.type==='checkout')playCue('coins');
 if(e.type==='checkout')playCue(ctx.guest(e.guestId)?.satisfaction>=65?'male-laugh':'grumble');
 if(e.type==='service')playCue(e.good?'male-laugh':'grumble');
 if(e.type==='levelUp'||e.type==='rankUp')playCue('fanfare');
-if(e.type==='specialStart'){playCue('special');}
+if(e.type==='specialStart')playCue('curtain');if(e.type==='curtainTap'){const cues=[['impact','male-reaction'],['whip','female-laugh'],['glass','coins'],['fail','heart']][(e.clicks-1)%4];cues.forEach(playCue);}
 if(e.type==='revealTendency')playCue('fanfare');
 }
 function set(key,value){if(key==='music'||key==='sfx')settings[key]=Math.max(0,Math.min(1,Number(value)));else if(key==='musicEnabled'||key==='sfxEnabled')settings[key]=!!value;try{localStorage.setItem('fantasy-tavern-audio',JSON.stringify(settings))}catch{}music.volume=settings.music;if(!settings.musicEnabled)music.pause();if(!settings.sfxEnabled)voices.forEach(a=>a.pause());}
