@@ -16,12 +16,12 @@ const stats=[[45,65,45,35],[55,40,55,40],[45,25,55,65],[60,30,60,40],[65,50,40,3
 const STAFF=races.map((race,i)=>({id:i,race,name:names[i],stats:{lore:stats[i][0],charisma:stats[i][1],dexterity:stats[i][2],stamina:stats[i][3]},tendency:profiles[i][0],appearance:profiles[i][1],temperament:profiles[i][2],personality:profiles[i][3],trait:profiles[i][4],line:profiles[i][5],level:1,xp:0,accessories:[],affinity:0,storyStage:0,outfits:['service','party','swim','casual'],outfit:'service',wage:70}));
 const NEEDS=[{id:'lore',name:'화술',detail:'재미있는 이야기와 대화를 원합니다.',line:'이 근처 재미있는 소식 없소?'},{id:'charisma',name:'품격',detail:'당당하고 품격 있는 접객을 원합니다.',line:'오늘은 대접 좀 받아 보겠소!'},{id:'stamina',name:'체력',detail:'활기찬 접객을 원합니다.',line:'밤은 긴데 벌써 지치면 안 되지!'},{id:'dexterity',name:'서비스',detail:'세심하고 능숙한 접객을 원합니다.',line:'잔도 채우고 배도 채우고. 부탁하네!'}];
 const COURSES=[
- {id:'hospitality',name:'접객 연습',scene:'closed',stat:'charisma',gain:4,cost:60,energy:10,motion:'greet',line:'빈 의자도 손님이라 생각하고. 자, 인사부터!'},
- {id:'cleaning',name:'청소 실습',scene:'clean',stat:'dexterity',gain:4,cost:45,energy:12,motion:'clean',line:'반짝반짝! 손님보다 바닥이 먼저 반하겠네.'},
- {id:'role',name:'역할 연습',scene:'practice',stat:'charisma',gain:5,cost:80,energy:14,motion:'greet',line:'당당하게 주문 받기! 할인 요구에도 흔들리지 않기!'},
- {id:'voice',name:'발성·표현 연습',scene:'bedroom',stat:'lore',gain:4,cost:60,energy:8,motion:'greet',line:'작게 속삭여도 계산 금액은 또렷하게!'},
- {id:'reading',name:'서재 공부',scene:'study',stat:'lore',gain:5,cost:70,energy:8,motion:'read',line:'이 책은 두껍고 수강료는 더 두껍네.'},
- {id:'fitness',name:'체력 단련',scene:'training',stat:'stamina',gain:5,cost:65,energy:18,motion:'run',line:'하나 둘! 오늘은 잔 대신 몸을 들어 올린다!'}];
+ {id:'hospitality',icon:'menu-0.png',name:'접객 연습',scene:'closed',stat:'charisma',gain:4,cost:60,energy:10,motion:'greet',line:'빈 의자도 손님이라 생각하고. 자, 인사부터!'},
+ {id:'cleaning',icon:'lesson-clean.png',name:'청소 실습',scene:'clean',stat:'dexterity',gain:4,cost:45,energy:12,motion:'clean',line:'반짝반짝! 손님보다 바닥이 먼저 반하겠네.'},
+ {id:'role',icon:'lesson-role.png',name:'역할 연습',scene:'practice',stat:'charisma',gain:5,cost:80,energy:14,motion:'shake',line:'당당하게 주문 받기! 할인 요구에도 흔들리지 않기!'},
+ {id:'voice',icon:'icon-service.png',name:'발성·표현 연습',scene:'bedroom',stat:'lore',gain:4,cost:60,energy:8,motion:'bounce',line:'작게 속삭여도 계산 금액은 또렷하게!'},
+ {id:'reading',icon:'ledger.png',name:'서재 공부',scene:'study',stat:'lore',gain:5,cost:70,energy:8,motion:'read',line:'이 책은 두껍고 수강료는 더 두껍네.'},
+ {id:'fitness',icon:'lesson-fitness.png',name:'체력 단련',scene:'training',stat:'stamina',gain:5,cost:65,energy:18,motion:'run',line:'하나 둘! 오늘은 잔 대신 몸을 들어 올린다!'}];
 const LESSON_LEVELS=[{id:0,name:'초급',required:0,multiplier:1},{id:1,name:'중급',required:45,multiplier:1.5},{id:2,name:'상급',required:65,multiplier:2}];
 const TALK_CHOICES=[{id:'listen',label:'오늘의 이야기를 들어준다',stat:'lore',gain:1,affinity:4,scene:'bedroom'}, {id:'encourage',label:'내일의 목표를 같이 정한다',stat:'charisma',gain:1,affinity:3,scene:'study'}, {id:'practice',label:'역할 연습을 같이 해 본다',stat:'dexterity',gain:1,affinity:3,scene:'practice'}];
 const TALK_RESPONSES=[
