@@ -39,3 +39,6 @@ header:after{content:'';position:absolute;right:-15px;top:-11px;width:43px;heigh
 /* Keep the title plaque inside its own HUD slot. */
 .brand{width:220px;flex-shrink:0;height:53px;padding:3px 0 0 38px;margin-right:0;font-size:24px;line-height:30px}.brand small{line-height:12px}.brand>img{position:absolute;left:-25px;top:-7px;width:64px;height:68px;margin:0;float:none;transform:rotate(-10deg)}.brand:before{left:-18px;top:-12px;width:242px;height:80px}
 .brand{padding-left:48px;font-size:23px}
+
+/* Keep portrait props removed when the standalone slapstick layer is disabled. */
+.dock-ornaments,.staff-charm,#dock:before,#dock:after,.staff-slot:after{display:none!important}
