@@ -152,3 +152,13 @@
 .popup{max-height:400px}.menu-grid{display:grid;grid-template-columns:1fr 1fr}.menu-grid .choice{flex-direction:column;justify-content:center;gap:4px;min-height:100px;padding:7px 4px;text-align:center}.menu-grid .choice img{width:35px;height:35px}.menu-grid .choice strong{font-size:12px}.menu-grid .choice small{font-size:9px}.menu-grid .choice .price{margin-left:0;font-size:12px}.service-choice{min-height:55px}.service-choice strong{font-size:13px}.service-choice small{font-size:10px}#dialog section{bottom:132px;min-height:60px;padding:8px 15px}#speech{font-size:14px}
 
 .book-page.left{left:8.7%;width:37.6%}.book-page.right{left:54.7%;width:36.6%}.book-footer{color:#f4dfb7;text-shadow:0 1px 2px #33200c}.book-footer .book-btn{text-shadow:none}
+
+/* v0.3: large illustrations, landscape and preparation scenes. */
+#illustration{left:-46px;bottom:-285px;width:425px;height:835px;object-position:center bottom}
+header{gap:16px}.tools{gap:6px}.tools button{padding:6px 10px}#fullscreen{font-size:30px;line-height:1;min-width:44px;width:44px;padding:0}
+#scene-background{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:55;pointer-events:none}
+.clinic-art{height:190px;overflow:hidden;border:1px solid #a4814d;border-radius:8px;margin:10px 0}.clinic-art img{width:100%;height:100%;object-fit:cover}
+#rotate{z-index:1000;inset:0;background:#21160ff5;align-items:center;justify-content:center;flex-direction:column;gap:15px;text-align:center;padding:30px;pointer-events:auto}#rotate strong{font-size:22px}#rotate span{font-size:14px}
+@media(orientation:portrait){#rotate{display:flex}}
+
+#fullscreen svg{width:25px;height:25px;fill:none;stroke:#f1d29b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}#fullscreen.is-fullscreen svg{transform:scale(.8)}
