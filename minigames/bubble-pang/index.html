@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<!-- Tavern-Game independent bubble shooter prototype v0.2.1. Offline single-file HTML, no external assets. -->
+<!-- Tavern-Game independent bubble shooter prototype v0.2.2. Offline single-file HTML, no external assets. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>소품 버블팡 v0.2.1</title>
+<title>소품 버블팡 v0.2.2</title>
 <style>
 :root{
   --gold:#f2d190;--gold2:#b9843e;--ink:#2a1625;--rose:#f27fb2;--paper:#f7ebcf;--paper2:#edd9af;
@@ -83,7 +83,7 @@ header{position:relative;display:flex;align-items:center;justify-content:space-b
   .statPill{padding:7px 11px;font-size:12px}
 }
 
-/* v0.2.1: strict 16:9, prevent implicit grid-min-height overflow */
+/* v0.2.2: strict 16:9, prevent implicit grid-min-height overflow */
 #app{display:block;}
 #chrome{height:100%;min-height:0;grid-template-rows:72px minmax(0,1fr)}
 header{min-height:0;padding:8px 20px;}
@@ -141,6 +141,43 @@ header{min-height:0;padding:8px 20px;}
 .actor{background:transparent;box-shadow:none;border:0;bottom:-4px;width:118px;height:131px;filter:drop-shadow(0 3px 7px rgba(0,0,0,.46));}
 .actor img{width:100%;height:100%;object-fit:contain;object-position:center bottom;user-select:none;}
 @media (max-width:980px){.actor{width:94px;height:101px}}
+
+/* v0.2.2: board-only translucent UI, open tavern background */
+#bg{filter:saturate(1.1) brightness(.76)!important}
+#vignette{background:linear-gradient(90deg,rgba(15,9,13,.22),transparent 38%,transparent 72%,rgba(15,9,13,.22))!important}
+#chrome{grid-template-rows:54px minmax(0,1fr)!important}
+header{background:linear-gradient(180deg,rgba(27,16,22,.60),rgba(27,16,22,.05))!important;border:0!important;backdrop-filter:none!important}
+#titleIcon{display:none!important}#titleText h1{font-size:20px!important}#titleText p{display:none!important}
+.statPill{background:rgba(28,13,22,.32)!important;border:0!important}
+#layout{grid-template-columns:minmax(0,25%) minmax(0,1fr) minmax(0,17%)!important;gap:6px!important;padding:0 9px 7px!important}
+#leftPanel,#rightPanel{position:relative;min-height:0;min-width:0;overflow:hidden;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;padding:0!important}
+#leftPanel{display:block!important;pointer-events:none}
+#leftPanel .panelTitle,#hostRow,#chatLog,#selectedSummary{display:none!important}
+#avatarStage{position:absolute!important;inset:0!important;background:none!important;border:0!important;border-radius:0!important;overflow:visible!important}
+#avatarStage:after{display:none!important}
+.actor{position:absolute!important;left:-6%!important;bottom:-3%!important;width:111%!important;height:79%!important;background:none!important;box-shadow:none!important;border-radius:0!important;animation:none!important;opacity:0;transform:translateX(-18%) scale(.99);transition:opacity .58s ease,transform .58s ease;will-change:opacity,transform}
+.actor.active{opacity:1;transform:translateX(0) scale(1)}
+.actor.exit{opacity:0;transform:translateX(-22%) scale(.98)}
+.actor img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:left bottom!important;filter:drop-shadow(0 7px 10px rgba(0,0,0,.3));}
+#actorCaption{position:absolute;left:2%;bottom:7%;max-width:98%;padding:9px 12px;background:rgba(33,16,26,.58);border-left:3px solid #ffd08c;border-radius:3px 13px 13px 3px;color:#fff4dd;text-shadow:0 1px 3px #0009;font-size:14px;line-height:1.35;opacity:1;transition:opacity .25s;z-index:3}
+#actorCaption b{color:#ffd899}
+#centerPanel{min-height:0!important;grid-template-rows:minmax(0,1fr) 36px!important;gap:1px!important}
+#stageShell{background:rgba(19,10,22,.77)!important;border:1px solid rgba(245,201,137,.45)!important;border-radius:9px!important;box-shadow:0 4px 25px #10091045!important}
+#bottomBar{min-height:32px!important;padding:0!important;justify-content:center!important}
+#actionInfo{gap:6px!important}.ctrlBtn{background:rgba(34,19,26,.48)!important;border:1px solid rgba(255,230,184,.35)!important;color:#fff7e1!important;border-radius:7px!important;padding:5px 10px!important}
+#rightPanel{display:block!important;color:#fff4dc!important;text-shadow:0 1px 3px #000b}
+#rightPanel .panelTitle{margin:8px 0 4px;padding:0 0 3px;border-bottom:1px solid #ffe4b27a!important}
+#rightPanel .panelTitle h2{font-size:15px!important;color:#ffe5b4!important;text-shadow:0 2px 4px #000c}
+#goalList,#stockList{display:flex!important;flex-direction:column!important;gap:3px!important;overflow:visible!important;max-height:none!important}
+#rightPanel>div:nth-child(3){display:block!important;overflow:visible!important}
+.goalItem,.stockItem{display:grid!important;grid-template-columns:29px minmax(0,1fr) auto!important;gap:4px!important;padding:3px 2px!important;min-height:39px!important;height:39px!important;background:rgba(21,11,18,.24)!important;border-radius:5px!important;color:#fff4df!important;box-shadow:none!important}
+.iconThumb{width:29px!important;height:29px!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+.goalItem strong,.stockItem strong{font-size:11px!important;color:#fff6e5!important}
+.goalItem small,.stockItem small{font-size:9px!important;color:#e9d5bb!important}
+.goalItem>div:last-child,.stockItem>div:last-child{font-size:11px!important;color:#ffdfa0!important}
+.progressBar{height:3px!important;background:#e6bda266!important}
+#miniHelp{display:none!important}
+@media(max-width:980px){#actorCaption{font-size:10px;padding:6px}#rightPanel .panelTitle h2{font-size:12px!important}.goalItem,.stockItem{height:31px!important;min-height:31px!important}.iconThumb{width:24px!important;height:24px!important}.goalItem strong,.stockItem strong{font-size:9px!important}.goalItem small,.stockItem small{font-size:8px!important}.statPill{padding:3px 5px!important}}
 </style>
 </head>
 <body>
@@ -149,7 +186,7 @@ header{min-height:0;padding:8px 20px;}
 <header>
   <div id="titleWrap">
     <div id="titleIcon">🫧</div>
-    <div id="titleText"><h1>소품 버블팡 <span style="color:#ff93c1">v0.2.1</span></h1><p>캐릭터와 함께 소품을 팡팡! · 5발마다 한 줄 하강</p></div>
+    <div id="titleText"><h1>소품 버블팡 <span style="color:#ff93c1">v0.2.2</span></h1><p>캐릭터와 함께 소품을 팡팡! · 5발마다 한 줄 하강</p></div>
   </div>
   <div id="topStats">
     <div class="statPill">점수 <b id="scoreTop">0</b></div>
@@ -158,7 +195,7 @@ header{min-height:0;padding:8px 20px;}
   </div>
 </header>
 <div id="layout">
-  <aside id="leftPanel" class="panel">
+  <aside id="leftPanel">
     <div class="panelTitle"><h2>라운지 수다</h2><small>캐릭터들이 계속 떠듭니다</small></div>
     <div id="avatarStage"></div>
     <div id="hostRow"></div>
@@ -192,7 +229,7 @@ header{min-height:0;padding:8px 20px;}
     </div>
   </section>
 
-  <aside id="rightPanel" class="panel">
+  <aside id="rightPanel">
     <div class="panelTitle"><h2>오늘의 목표</h2><small>모두 채우면 승리</small></div>
     <div id="goalList"></div>
     <div>
@@ -280,28 +317,32 @@ function toast(msg){
   const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show');
   clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove('show'),1300);
 }
+let actorIndex=0;
+const actorLines={
+ momo:['그거 먹는 거 아니야? 아쉽다!','내 몸도 저렇게 통통 튀는데!','다 모으면 푸딩도 주는 거지?'],
+ rubia:['하하! 이 몸의 우아한 조준을 보아라!','지금 것은 제법 훌륭했다.','흠, 오늘은 특별히 칭찬해 주마.'],
+ nisha:['호오, 실력이 아주 조금 늘었네?','그 구슬... 일부러 빗맞혔지?','다음에는 계산서도 터뜨려 봐.'],
+ brika:['우하하! 더 크게 터뜨려 봐!','술잔 터뜨리는 건 아니겠지?','좋아! 한 판 더!'],
+ pipi:['깃털보다 가벼운 구슬이라니!','와! 다음엔 내 차례야!','좋은 콤보! 팁은 어디 있지?'],
+ sylvia:['호호, 칭찬은 무료랍니다.','정산은 정확하게 부탁드려요.','이런 좋은 물건은 할인하지 않아요.']};
 function pushChat(name,text,color='#ff8fb8'){
-  const log=document.getElementById('chatLog');
-  const div=document.createElement('div'); div.className='chatBubble'; div.style.setProperty('--accent',color);
-  div.innerHTML=`<b>${name}</b> · ${text}`;
-  log.prepend(div);
-  while(log.children.length>4) log.removeChild(log.lastElementChild);
+ const line=document.getElementById('actorCaption');
+ if(!line)return;line.innerHTML=`<b>${name}</b> · ${text}`;
 }
 function buildLeftUI(){
-  const hostRow=document.getElementById('hostRow'); hostRow.innerHTML='';
-  staff.forEach((s,i)=>{
-    const b=document.createElement('button'); b.className='hostBtn'+(i===selectedStaff?' active':'');
-    b.innerHTML=`<b>${s.name}</b><span>${s.role}</span>`;
-    b.onclick=()=>{selectedStaff=i; buildLeftUI(); updateSelectedSummary(); pushChat(s.name,s.line,s.color1);};
-    hostRow.appendChild(b);
-  });
-  const stage=document.getElementById('avatarStage'); stage.innerHTML='';
-  [selectedStaff,(selectedStaff+2)%staff.length].forEach((idx,j)=>{
-    const s=staff[idx]; const actor=document.createElement('div'); actor.className='actor';
-    actor.style.left=(32+j*112)+'px'; actor.style.setProperty('--c1',s.color1); actor.style.setProperty('--c2',s.color2); actor.style.setProperty('--skin',s.skin); actor.style.setProperty('--dur', (2.6+j*.45)+'s');
-    actor.innerHTML=`<img src="${staffImages[s.pic]}" alt="${s.name}" draggable="false">`;
-    stage.appendChild(actor);
-  });
+ const stage=document.getElementById('avatarStage');stage.innerHTML='<div id="actorCaption"></div>';
+ staff.forEach((s,i)=>{
+  const actor=document.createElement('div');actor.className='actor'; actor.dataset.actor=String(i);
+  actor.innerHTML=`<img src="${staffImages[s.pic]}" alt="${s.name}" draggable="false">`;
+  stage.appendChild(actor);
+ });
+ showActor(0);
+}
+function showActor(index){
+ actorIndex=(index+staff.length)%staff.length;
+ document.querySelectorAll('#avatarStage .actor').forEach((a,i)=>{a.classList.toggle('active',i===actorIndex);a.classList.toggle('exit',i!==actorIndex);});
+ const s=staff[actorIndex]; const lines=actorLines[s.pic]||[s.line];
+ pushChat(s.name,lines[Math.floor(Math.random()*lines.length)],s.color1);
 }
 function updateSelectedSummary(){
   const s=staff[selectedStaff];
@@ -378,8 +419,8 @@ function settleBubble(hitX,hitY,hit){ const target=nearestEmptyAround(hit,hitX,h
   if(pendingDrop && !overlayState){ pendingDrop=false; addDescendingRow(); }
   if(boardBottomOccupied() && !overlayState){ gameOver('실패선까지 버블이 내려왔어요.'); }
 }
-function randomTalk(){ const s=staff[rand(staff.length)]; const texts=['오늘 목표는 세 종류만 딱 채우면 끝!','왼쪽은 수다, 오른쪽은 미션, 가운데는 집중 플레이!','다섯 발마다 한 줄 내려오니까 너무 오래 고민하면 손해예요.','모바일 가로 기준으로 다시 배치했어요.','예쁘게 터뜨리는 것도 실력입니다.']; pushChat(s.name,texts[rand(texts.length)],s.color1); }
-setInterval(()=>{ if(!overlayState) randomTalk(); }, 6200);
+function randomTalk(){showActor(actorIndex+1);}
+setInterval(()=>{if(!overlayState) randomTalk();},5300);
 
 function update(dt){
   if(shot){ let steps=Math.max(1, Math.ceil(dt*110)); for(let s=0;s<steps;s++){ if(!shot) break; shot.x += shot.vx*dt/steps; shot.y += shot.vy*dt/steps; const left=boardLeft+R, right=boardLeft + cols*D + R; if(shot.x<left){ shot.x=left+(left-shot.x); shot.vx=Math.abs(shot.vx); } if(shot.x>right){ shot.x=right-(shot.x-right); shot.vx=-Math.abs(shot.vx); } if(shot.y<boardTop+R){ settleBubble(shot.x,shot.y,null); break; }
@@ -432,7 +473,7 @@ document.getElementById('soundBtn').onclick=(e)=>{ soundOn=!soundOn; e.target.te
 window.addEventListener('keydown',e=>{ if(e.code==='Space'){ e.preventDefault(); launch(); } else if(e.key==='s' || e.key==='S'){ [current,next]=[next,current]; } });
 // init
 fitCanvas();
-buildLeftUI(); updateSelectedSummary(); startGame(); randomTalk(); requestAnimationFrame(loop);
+buildLeftUI(); updateSelectedSummary(); startGame(); requestAnimationFrame(loop);
 })();
 </script>
 </body></html>
