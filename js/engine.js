@@ -41,7 +41,7 @@ class Game{
  release(g){if(g.tableId!==null){const t=this.tables[g.tableId];if(t.staffId!==null)this.staff[t.staffId].tableId=null;t.guestId=null;t.staffId=null}g.state='done'}
  step(dt){if(this.paused||!['open','closing'].includes(this.state))return;dt=Math.max(0,Math.min(dt,1));this.time+=dt;if(this.time>=D.CONFIG.duration&&this.state==='open'){this.state='closing';this.emit('closing');this.notice='마감 · 남은 손님을 응대하세요'}
  if(this.state==='open'&&this.time>=this.nextSpawn&&this.generated<D.CONFIG.maxGuests){if(this.waitingId===null)this.spawn();this.nextSpawn=this.time+D.CONFIG.spawnInterval}
- for(const s of this.staff)if(s.tableId===null)s.energy=Math.min(100,s.energy+dt*.6);
+ for(const s of this.staff)if(this.team.includes(s.id)&&s.tableId===null)s.energy=Math.min(100,s.energy+dt*.6);
  for(const g of this.guests){g.phaseTime+=dt;if(g.state==='waiting'){g.wait+=dt;if(g.wait>D.CONFIG.waitLimit){this.lost++;g.state='done';if(this.waitingId===g.id)this.waitingId=null;this.emit('lost',{guestId:g.id})}}
  else if(g.state==='seated'){if(g.phaseTime>D.CONFIG.unassignedLimit){this.lost++;this.release(g);this.emit('lost',{guestId:g.id})}}
  else if(g.state==='active'){g.elapsed+=dt;const s=this.staff[this.tables[g.tableId].staffId];s.energy=Math.max(0,s.energy-dt*.025);if(!g.request&&g.elapsed>=g.nextAt)this.createRequest(g);if(g.request){g.request.age+=dt;if(g.request.age>20)g.satisfaction=Math.max(0,g.satisfaction-dt*.08);if(g.request.age>D.CONFIG.requestLimit){const type=g.request.type;if(type==='checkout')this.checkout(g,true);else{g.satisfaction=Math.max(0,g.satisfaction-8);this.emit('missed',{guestId:g.id,requestType:type});this.finishRequest(g,4)}}}}
