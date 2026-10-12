@@ -188,7 +188,7 @@ header{min-height:0;padding:8px 20px;}
         <button class="ctrlBtn" id="restartBtn">새 판</button>
         <button class="ctrlBtn" id="soundBtn">🔊 효과음</button>
       </div>
-      <div style="color:#ffe8c6;font-size:13px;padding-right:6px;">팝된 버블은 바로 아이템 획득으로 계산됩니다.</div>
+      <div style="color:#ffe8c6;font-size:13px;padding-right:6px;">10개 또는 20개를 모으면 해당 소품 1개를 얻습니다.</div>
     </div>
   </section>
 
@@ -196,7 +196,7 @@ header{min-height:0;padding:8px 20px;}
     <div class="panelTitle"><h2>오늘의 목표</h2><small>모두 채우면 승리</small></div>
     <div id="goalList"></div>
     <div>
-      <div class="panelTitle" style="margin-top:2px;"><h2>획득 소품</h2><small>누적 수집</small></div>
+      <div class="panelTitle" style="margin-top:2px;"><h2>획득 소품</h2><small>누적 보관</small></div>
       <div id="stockList"></div>
     </div>
     <div id="miniHelp">
@@ -204,7 +204,7 @@ header{min-height:0;padding:8px 20px;}
       • 같은 종류 3개 이상 연결하면 팝<br>
       • 5발 쏠 때마다 맨 위에서 새 줄이 내려옴<br>
       • 버블이 실패선에 닿으면 게임 오버<br>
-      • 난이도 상승은 거의 없고, 기본 압박만 유지합니다.
+      • 소품 종류마다 10/20개 수집 시 1개 지급
     </div>
   </aside>
 </div>
@@ -233,7 +233,7 @@ const itemDefs=[
   {name:'칼라', color:'#c0ffda', crop:DATA.itemCrops[3], kind:'M'},
   {name:'로프', color:'#8de9ef', crop:DATA.itemCrops[4], kind:'M'},
   {name:'벤치', color:'#d1a2ff', crop:DATA.itemCrops[5], kind:'M'},
-].map((d,i)=>({...d,orb:DATA.orbCrops[i]}));
+].map((d,i)=>({...d,need:([20,10,10,10,10,20][i]),orb:DATA.orbCrops[i]}));
 const cv=document.getElementById('gameCanvas');
 function fitCanvas(){
  const parent=document.getElementById('canvasWrap');
@@ -257,7 +257,13 @@ const shotsPerDrop=5;
 let score=0, totalLoot=0, shotsLeft=shotsPerDrop, soundOn=true;
 let board=[], current=0, next=1, shot=null, aim={x:W/2,y:120}, particles=[], fallIcons=[];
 let selectedStaff=0, overlayState=null, toastTimer=null, lastTime=0, isPointerDown=false, pendingDrop=false;
-let goals=[];const stock=Array(itemDefs.length).fill(0);
+let goals=[];const stock=Array(itemDefs.length).fill(0),fragments=Array(itemDefs.length).fill(0);
+const SAVE_KEY='tavern_bubble_pang_v021_inventory';
+try {const saved=JSON.parse(localStorage.getItem(SAVE_KEY)||'{}');
+ if(Array.isArray(saved.stock)&&saved.stock.length===stock.length) saved.stock.forEach((v,i)=>stock[i]=Math.max(0,Math.floor(Number(v)||0)));
+ if(Array.isArray(saved.fragments)&&saved.fragments.length===fragments.length) saved.fragments.forEach((v,i)=>fragments[i]=Math.max(0,Math.floor(Number(v)||0)));
+}catch(e){}
+function persistRewards(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({stock,fragments}));}catch(e){}}
 let orbImg=new Image(), itemImg=new Image(); orbImg.src=DATA.orbSheet; itemImg.src=DATA.itemSheet;
 
 function rand(n){ return Math.floor(Math.random()*n); }
@@ -305,7 +311,7 @@ function updateSelectedSummary(){
 }
 function makeGoals(){
   const picks=[0,1,2,3,4,5].sort(()=>Math.random()-.5).slice(0,3);
-  goals = picks.map((id,idx)=>({id, need: 6+idx*2+rand(3), got:0}));
+  goals = picks.map((id,idx)=>({id, need: itemDefs[id].need, got:0}));
 }
 function renderLists(){
   document.getElementById('scoreTop').textContent=score;
@@ -316,7 +322,7 @@ function renderLists(){
     wrap.innerHTML=`<div class="iconThumb" data-icon="${g.id}"></div><div><strong>${d.name}</strong><small>${g.got} / ${g.need}</small><div class="progressBar"><span style="width:${Math.min(100, g.got/g.need*100)}%"></span></div></div><div style="font-weight:800;color:#734357">${Math.max(0,g.need-g.got)}개</div>`; gl.appendChild(wrap); });
   const sl=document.getElementById('stockList'); sl.innerHTML='';
   itemDefs.forEach((d,i)=>{ const wrap=document.createElement('div'); wrap.className='stockItem';
-    wrap.innerHTML=`<div class="iconThumb" data-icon="${i}"></div><div><strong>${d.name}</strong><small>${d.kind} 계열</small></div><div style="font-weight:800;color:#734357">x ${stock[i]}</div>`; sl.appendChild(wrap); });
+    wrap.innerHTML=`<div class="iconThumb" data-icon="${i}"></div><div><strong>${d.name}</strong><small>${d.kind} 계열 · ${fragments[i]}/${d.need} 조각</small></div><div style="font-weight:800;color:#734357">x ${stock[i]}</div>`; sl.appendChild(wrap); });
   document.querySelectorAll('.iconThumb').forEach(el=>drawIconThumb(el, +el.dataset.icon));
 }
 function drawIconThumb(el,id){
@@ -329,7 +335,7 @@ function drawIconThumb(el,id){
 function newRow(){ return Array.from({length:cols},()=>rand(itemDefs.length)); }
 function initBoard(){ board=[]; for(let r=0;r<rows;r++) board.push(Array(cols).fill(null)); for(let r=0;r<5;r++) board[r]=newRow(); for(let r=5;r<rows;r++) board[r]=Array(cols).fill(null); }
 function startGame(){
-  score=0; totalLoot=0; shotsLeft=shotsPerDrop; board=[]; particles=[]; fallIcons=[]; shot=null; pendingDrop=false; current=rand(itemDefs.length); next=rand(itemDefs.length); overlayState=null; stock.fill(0); makeGoals(); initBoard(); renderLists(); hideOverlay(); pushChat(staff[selectedStaff].name,'준비 완료! 가운데 필드에서 바로 시작해요.',staff[selectedStaff].color1); }
+  score=0; totalLoot=0; shotsLeft=shotsPerDrop; board=[]; particles=[]; fallIcons=[]; shot=null; pendingDrop=false; current=rand(itemDefs.length); next=rand(itemDefs.length); overlayState=null; makeGoals(); initBoard(); renderLists(); hideOverlay(); pushChat(staff[selectedStaff].name,'준비 완료! 가운데 필드에서 바로 시작해요.',staff[selectedStaff].color1); }
 function pos(r,c){ return {x:boardLeft + c*D + (r%2?R:0) + R, y:boardTop + r*rowH + R}; }
 function neighbors(r,c){ const even = (r%2===0); const dirs = even ? [[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]] : [[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]]; return dirs.map(([dr,dc])=>[r+dr,c+dc]).filter(([rr,cc])=>rr>=0&&rr<rows&&cc>=0&&cc<cols); }
 function boardBottomOccupied(){ return board[rows-1].some(v=>v!==null); }
@@ -357,7 +363,16 @@ function flood(r,c,val){ const q=[[r,c]], seen=new Set(), out=[]; while(q.length
 function anchoredSet(){ const set=new Set(), q=[]; for(let c=0;c<cols;c++) if(board[0][c]!==null){ const key='0_'+c; set.add(key); q.push([0,c]); }; for(let i=0;i<q.length;i++){ const [rr,cc]=q[i]; neighbors(rr,cc).forEach(([nr,nc])=>{ const key=nr+'_'+nc; if(board[nr][nc]!==null && !set.has(key)){ set.add(key); q.push([nr,nc]); }; }); } return set; }
 function addParticles(x,y,color,id,count=9){ for(let i=0;i<count;i++) particles.push({x,y,vx:(Math.random()-.5)*190,vy:(Math.random()-.9)*190,life:.55+Math.random()*.3,color,id}); }
 function addFallIcon(x,y,id){ fallIcons.push({x,y,vx:(Math.random()-.5)*70,vy:-40-Math.random()*30,rot:(Math.random()-.5)*2,angle:(Math.random()-.5),life:.9,id}); }
-function reward(id,amount=1){ stock[id]+=amount; totalLoot+=amount; score+=amount*40; const g=goals.find(x=>x.id===id); if(g) g.got = Math.min(g.need, g.got + amount); renderLists(); checkVictory(); }
+function reward(id,amount=1){
+ fragments[id]+=amount; score+=amount*40;
+ const g=goals.find(x=>x.id===id);
+ if(g) g.got=Math.min(g.need,g.got+amount);
+ while(fragments[id]>=itemDefs[id].need){
+   fragments[id]-=itemDefs[id].need; stock[id]++; totalLoot++;
+   toast(itemDefs[id].name+' 1개 획득!');
+ }
+ persistRewards(); renderLists(); checkVictory();
+}
 function popCells(cells,bonusText='팝!'){ if(!cells.length) return; cells.forEach(([rr,cc])=>{ const id=board[rr][cc]; if(id===null) return; const p=pos(rr,cc); addParticles(p.x,p.y,itemDefs[id].color,id,7); addFallIcon(p.x,p.y,id); reward(id,1); board[rr][cc]=null; }); score += cells.length*10; renderLists(); toast(`${bonusText} +${cells.length}`); tone(770,.09,'triangle',.05); }
 function settleBubble(hitX,hitY,hit){ const target=nearestEmptyAround(hit,hitX,hitY); if(!target){ shot=null; return; } board[target.r][target.c]=shot.id; const placedId=shot.id; shot=null; const p=pos(target.r,target.c); addParticles(p.x,p.y,itemDefs[placedId].color,placedId,4); const group=flood(target.r,target.c,placedId); if(group.length>=3){ popCells(group, group.length>=5?'대박 콤보!':'연결 성공!'); const anchored=anchoredSet(); const drops=[]; for(let rr=0; rr<rows; rr++) for(let cc=0; cc<cols; cc++) if(board[rr][cc]!==null && !anchored.has(rr+'_'+cc)) drops.push([rr,cc]); if(drops.length){ popCells(drops, '낙하 보너스!'); pushChat(staff[(selectedStaff+1)%staff.length].name,'꺄악, 매달린 버블이 우수수 떨어졌어요!', '#ffd27a'); } }
   if(pendingDrop && !overlayState){ pendingDrop=false; addDescendingRow(); }
