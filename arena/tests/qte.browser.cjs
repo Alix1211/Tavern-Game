@@ -1,0 +1,30 @@
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');
+(async()=>{
+ const browser=await chromium.launch({executablePath:process.env.TAVERN_CHROMIUM||'/tmp/tavern-chromium',headless:true,args:['--no-sandbox']});
+ const p=await browser.newPage({viewport:{width:1280,height:720},hasTouch:true});const errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.goto(process.env.ARENA_URL||'http://localhost:8010/arena/');await p.waitForTimeout(450);
+ assert.equal(await p.evaluate(()=>ArenaPreview.state.phase),'ready');
+ assert.equal(await p.locator('[data-action=kick]').isDisabled(),true);
+ await p.screenshot({path:'/tmp/qte-ready.png'});
+ await p.evaluate(()=>ArenaPreview.engine.random=()=>0);
+ await p.locator('#start').tap();
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');
+ await p.screenshot({path:'/tmp/qte-tell.png'});
+ await p.locator('#pause').tap();const before=await p.evaluate(()=>JSON.stringify(ArenaPreview.state));await p.waitForTimeout(400);assert.equal(await p.evaluate(()=>JSON.stringify(ArenaPreview.state)),before);await p.locator('#pause').tap();
+ await p.locator('[data-action=kick]').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');
+ assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.right),100);assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.left),84);
+ await p.screenshot({path:'/tmp/qte-hit.png'});
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');await p.locator('[data-action=guard]').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');assert.equal(await p.evaluate(()=>ArenaPreview.state.mp.right),80);assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.right),97);
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');await p.locator('[data-action=magic]').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.right),81);
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.right),65);
+ await p.locator('#reset').tap();await p.locator('#start').tap();
+ for(let i=0;i<7;i++){await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');await p.locator('[data-action=kick]').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');}
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='finished');assert.equal(await p.evaluate(()=>ArenaPreview.state.result),'win');assert.equal(await p.locator('#start').isVisible(),true);await p.screenshot({path:'/tmp/qte-win.png'});
+ await p.locator('#start').tap();assert.equal(await p.evaluate(()=>ArenaPreview.state.phase),'wait');await p.locator('#reset').tap();
+ await p.locator('#fullscreen').tap();await p.waitForFunction(()=>!!document.fullscreenElement);await p.evaluate(()=>document.exitFullscreen());
+ await p.goto('file:///workspace/scratch/18776ef4b8cf/Tavern-Game/arena/arena-qte.html');await p.waitForTimeout(800);await p.evaluate(()=>ArenaPreview.engine.random=()=>.8);await p.locator('#start').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='telegraph');await p.locator('[data-action=punch]').tap();await p.waitForFunction(()=>ArenaPreview.state.phase==='recovery');assert.equal(await p.evaluate(()=>ArenaPreview.state.outcome),'win');
+ await p.locator('#reset').tap();await p.setViewportSize({width:960,height:540});await p.waitForTimeout(250);const box=await p.locator('#arena').boundingBox();assert(Math.abs(box.width-960)<1);assert(Math.abs(box.height-540)<1);await p.screenshot({path:'/tmp/qte-mobile.png'});
+ const broken=await p.evaluate(()=>[...document.images].filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src));assert.deepEqual(broken,[]);assert.deepEqual(errors,[]);
+ console.log('PASS browser: touch counter/guard/wrong/timeout, pause, full victory, restart, offline HTML, fullscreen, 960x540 scaling, no missing images/errors');await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
