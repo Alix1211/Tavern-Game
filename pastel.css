@@ -1,3 +1,4 @@
+/* Archived v0.6 design. Not loaded by index.html in v0.7. */
 /* v0.6 alternative art direction. Original assets, original layout, jelly surfaces. */
 :root{--ink:#62455f;--muted:#886b80;--rose:#ed91b2;--rose-deep:#a94a76;--mint:#a4ddca;--cream:#fff8ec;--lavender:#cdb6ec;--outline:#efc4d5;--jelly-shadow:0 4px 0 #dba9c4,0 8px 16px #6a4a7020}
 html,body{background:#ead9e9;color:var(--ink)}#game{background:#ffeede}button{color:var(--ink)}button:focus-visible{outline:3px solid #a15d9e;outline-offset:3px}button:disabled{opacity:.57}
