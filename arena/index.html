@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>판타지 주점 · 실시간 가위바위보</title>
+  <title>판타지 주점 · 자동 검투 경기</title>
   <link rel="stylesheet" href="arena.css">
 </head>
 <body>
@@ -20,16 +20,11 @@
   </header>
   <img id="callout" src="assets/fight.png" alt="FIGHT">
   <button id="start" aria-label="경기 시작"><img src="assets/fight.png" alt="FIGHT"></button>
-  <div id="tell" hidden><svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="45"/><circle id="deadline" cx="50" cy="50" r="45"/></svg><img src="assets/punch.png" alt="상대 공격"></div>
-  <img id="choice" src="assets/punch.png" alt="내 선택" hidden>
-  <nav class="actions" aria-label="반격 선택">
-    <button class="magic" data-action="magic" aria-label="마법"><img src="assets/magic.png" alt=""></button>
-    <button class="kick" data-action="kick" aria-label="발차기"><img src="assets/kick.png" alt=""></button>
-    <button class="guard" data-action="guard" aria-label="방어"><img src="assets/guard.png" alt=""></button>
-    <button class="punch" data-action="punch" aria-label="주먹"><img src="assets/punch.png" alt=""></button>
-  </nav>
+  <div id="cutin" hidden><div class="cutin-rays"></div><img src="assets/darkelf-magic.png" alt="필살기 컷인"></div>
+  <img id="curtain" src="assets/curtain-frame-0.png" alt="닫힌 커튼" hidden>
+  <div id="combo" hidden><img src="assets/vs.png" alt=""><span>3 HIT</span></div>
   <nav class="utility" aria-label="화면 설정"><button id="sound" aria-label="효과음 끄기" aria-pressed="false"><img src="assets/settings.png" alt=""></button><button id="pause" aria-label="일시정지" aria-pressed="false"><img src="assets/pause.png" alt=""></button><button id="fullscreen" aria-label="전체화면"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M18 8H8v10M30 8h10v10M8 30v10h10M40 30v10H30" fill="none" stroke="currentColor" stroke-width="4"/></svg></button><button id="reset" aria-label="다시 시작">↻</button></nav>
   <div id="paused" hidden>Ⅱ</div>
 </main>
-<script src="arena-data.js"></script><script src="arena-engine.js"></script><script src="arena.js"></script>
+<script src="arena-data.js"></script><script src="arena-auto-engine.js"></script><script src="arena.js"></script>
 </body></html>

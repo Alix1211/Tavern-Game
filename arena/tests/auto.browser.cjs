@@ -1,0 +1,21 @@
+const {chromium}=require('playwright'),assert=require('node:assert/strict');
+(async()=>{
+ const b=await chromium.launch({executablePath:process.env.TAVERN_CHROMIUM||'/tmp/tavern-chromium',headless:true,args:['--no-sandbox']});
+ const c=await b.newContext({viewport:{width:1280,height:720},hasTouch:true,recordVideo:{dir:'/tmp/auto-videos',size:{width:1280,height:720}}});const p=await c.newPage(),errors=[];p.on('pageerror',e=>errors.push(e.message));
+ await p.goto(process.env.ARENA_URL||'http://localhost:8010/arena/');assert.equal(await p.locator('[data-action]').count(),0);
+ await p.evaluate(()=>{let seed=71;ArenaPreview.engine.random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};});
+ await p.locator('#start').tap();await p.waitForFunction(()=>ArenaPreview.state.rounds>2);
+ await p.locator('#pause').tap();const snap=await p.evaluate(()=>JSON.stringify(ArenaPreview.state));await p.waitForTimeout(350);assert.equal(await p.evaluate(()=>JSON.stringify(ArenaPreview.state)),snap);await p.locator('#pause').tap();
+ await p.waitForFunction(()=>!document.querySelector('#cutin').hidden,{},{timeout:20000});
+ await p.waitForTimeout(160);await p.evaluate(()=>ArenaPreview.state.paused=true);await p.screenshot({path:'/tmp/auto-super.png'});await p.evaluate(()=>ArenaPreview.state.paused=false);
+ await p.waitForFunction(()=>ArenaPreview.state.phase==='finished',{},{timeout:90000});assert(await p.evaluate(()=>ArenaPreview.state.winner!==undefined));
+ await p.waitForFunction(()=>ArenaPreview.resultTime>1&&ArenaPreview.resultTime<1.8);await p.screenshot({path:'/tmp/auto-result.png'});
+ await p.waitForFunction(()=>!document.querySelector('#curtain').hidden&&ArenaPreview.resultTime>3.5);await p.screenshot({path:'/tmp/auto-curtain.png'});
+ await p.waitForFunction(()=>ArenaPreview.resultTime>7.3);assert(await p.locator('#curtain').isHidden());assert(await p.locator('#start').isVisible());
+ await p.locator('#start').tap();assert.equal(await p.evaluate(()=>ArenaPreview.state.phase),'wait');await p.locator('#reset').tap();assert.equal(await p.evaluate(()=>ArenaPreview.state.hp.left),100);
+ await p.locator('#fullscreen').tap();await p.waitForFunction(()=>!!document.fullscreenElement);await p.evaluate(()=>document.exitFullscreen());
+ const broken=await p.evaluate(()=>[...document.images].filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src));assert.deepEqual(broken,[]);assert.deepEqual(errors,[]);
+ const video=await p.video().path();await c.close();
+ const f=await b.newPage({viewport:{width:960,height:540},hasTouch:true});f.on('pageerror',e=>errors.push(e.message));await f.goto('file:///workspace/scratch/18776ef4b8cf/Tavern-Game/arena/arena-auto.html');await f.locator('#start').tap();await f.waitForFunction(()=>ArenaPreview.state.rounds>=2);const box=await f.locator('#arena').boundingBox();assert(Math.abs(box.width-960)<1&&Math.abs(box.height-540)<1);await f.locator('#pause').tap();await f.screenshot({path:'/tmp/auto-mobile.png'});assert.deepEqual(errors,[]);await b.close();
+ console.log('PASS browser: no attack buttons, automatic exchanges, special cut-in, pause, real match result, winner/loser poses, curtain close/open, restart/reset, fullscreen, standalone offline, 960x540, no errors/broken images');console.log('VIDEO',video);
+})().catch(e=>{console.error(e);process.exit(1)});
