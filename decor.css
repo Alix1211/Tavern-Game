@@ -42,3 +42,6 @@ header:after{content:'';position:absolute;right:-15px;top:-11px;width:43px;heigh
 
 /* Keep portrait props removed when the standalone slapstick layer is disabled. */
 .dock-ornaments,.staff-charm,#dock:before,#dock:after,.staff-slot:after{display:none!important}
+
+/* Life systems are retained but their entry button is temporarily hidden. */
+#life-button[hidden]{display:none!important}
